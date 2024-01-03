@@ -40,7 +40,7 @@ function game(getComputerChoice, getPlayerChoice, rounds) {
     let computerChoice, playerChoice, computerScore = 0, playerScore = 0;
 
     for (let i = 0; i < rounds; i++) {
-        console.log(`Round ${i+1}.`);
+        console.log(`Round ${i + 1}.`);
 
         computerChoice = getComputerChoice();
         playerChoice = getPlayerChoice();
@@ -49,17 +49,17 @@ function game(getComputerChoice, getPlayerChoice, rounds) {
         let roundResult = playRound(playerChoice, computerChoice);
         console.log(roundResult);
 
-        if (roundResult.startsWith("You win!")) {playerScore++;}
-        else if (roundResult.startsWith("You lose!")) {computerScore++;}
-        else if (roundResult.startsWith("It's a tie!")) {computerScore++; playerScore++;}
+        if (roundResult.startsWith("You win!")) { playerScore++; }
+        else if (roundResult.startsWith("You lose!")) { computerScore++; }
+        else if (roundResult.startsWith("It's a tie!")) { computerScore++; playerScore++; }
     }
 
     let result;
     console.log("Game results:")
 
-    if (playerScore > computerScore) {result = `You win! Computer score: ${computerScore}, Player score: ${playerScore}.`;}
-    else if (playerScore === computerScore) {result = `It's a tie! Computer score: ${computerScore}, Player score: ${playerScore}`;}
-    else {result = `You lost! Computer score: ${computerScore}, Player score: ${playerScore}.`;}
+    if (playerScore > computerScore) { result = `You win! Computer score: ${computerScore}, Player score: ${playerScore}.`; }
+    else if (playerScore === computerScore) { result = `It's a tie! Computer score: ${computerScore}, Player score: ${playerScore}`; }
+    else { result = `You lost! Computer score: ${computerScore}, Player score: ${playerScore}.`; }
     console.log(result);
 
     return result;
