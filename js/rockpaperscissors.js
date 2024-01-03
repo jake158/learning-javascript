@@ -1,5 +1,5 @@
 
-function getComputerChoice() {
+function generateComputerChoice() {
     // Return random integer - either 0, 1 or 2
     let choice = Math.floor(Math.random() * 3);
 
@@ -36,14 +36,34 @@ function playRound(playerSelection, computerSelection) {
     return output;
 }
 
-let computerChoice = getComputerChoice();
-console.log(`Computer choice: ${computerChoice}`)
+function game(getComputerChoice, getPlayerChoice, rounds) {
+    let computerChoice, playerChoice, computerScore = 0, playerScore = 0;
 
-console.log("Playing as Rock:")
-console.log(playRound("Rock", computerChoice));
+    for (let i = 0; i < rounds; i++) {
+        console.log(`Round ${i+1}.`);
 
-console.log("Playing as Paper:")
-console.log(playRound("Paper", computerChoice));
+        computerChoice = getComputerChoice();
+        playerChoice = getPlayerChoice();
+        console.log(`Computer choice: ${computerChoice}, Player choice: ${playerChoice}`);
 
-console.log("Playing as Scissors:")
-console.log(playRound("Scissors", computerChoice));
+        let roundResult = playRound(playerChoice, computerChoice);
+        console.log(roundResult);
+
+        if (roundResult.startsWith("You win!")) {playerScore++;}
+        else if (roundResult.startsWith("You lose!")) {computerScore++;}
+        else if (roundResult.startsWith("It's a tie!")) {computerScore++; playerScore++;}
+    }
+
+    let result;
+    console.log("Game results:")
+
+    if (playerScore > computerScore) {result = `You win! Computer score: ${computerScore}, Player score: ${playerScore}.`;}
+    else if (playerScore === computerScore) {result = `It's a tie! Computer score: ${computerScore}, Player score: ${playerScore}`;}
+    else {result = `You lost! Computer score: ${computerScore}, Player score: ${playerScore}.`;}
+    console.log(result);
+
+    return result;
+}
+
+
+game(generateComputerChoice, () => "rock", 5);
