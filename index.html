@@ -1,10 +1,43 @@
 <!DOCTYPE html>
+
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Javascript</title>
-    </head>
-    <body>
-        <script src="js/rockpaperscissors.js"></script>
-    </body>
+  <head>
+    <meta charset="UTF-8">
+    <title>Javascript</title>
+    <script src="js/rockpaperscissors.js" defer></script>
+
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .controls {
+        margin: 20px;
+        display: flex;
+        gap: 15px;
+      }
+
+      button {
+        width: 100px;
+        height: 30px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Rock Paper Scissors</h1>
+    <p>Select your option:</p>
+
+    <div class="controls">
+      <button id="rock">Rock</button>
+      <button id="paper">Paper</button>
+      <button id="scissors">Scissors</button>
+    </div>
+
+    <p class="display"></p>
+    <p class="score"></p>
+  </body>
 </html>
