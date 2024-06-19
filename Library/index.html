@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="javascript.js" defer></script>
+</head>
+
+<body>
+    <div class="container">
+        <button class="new">New Book</button>
+        <table>
+            <caption>Your Library</caption>
+            <thead>
+                <th scope="col">Title</th>
+                <th scope="col">Author</th>
+                <th scope="col">Pages</th>
+                <th scope="col">Read</th>
+            </thead>
+
+            <tbody class="books">
+            </tbody>
+        </table>
+    </div>
+    <dialog id="newbook">
+        <form method="dialog">
+            <h2>New Book</h2>
+
+            <div class="dialoginputs">
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" required><br><br>
+
+                <label for="author">Author:</label>
+                <input type="text" id="author" name="author" required><br><br>
+
+                <label for="pages">Pages:</label>
+                <input type="number" id="pages" name="pages" required><br><br>
+
+                <label for="read">Read:</label>
+                <input type="checkbox" id="read" name="read"><br><br>
+            </div>
+
+            <div class="dialogbuttons">
+                <button type="submit" id="submitbutton">Add Book</button>
+                <button type="reset">Reset</button>
+                <button type="button" id="cancelbutton">Cancel</button>
+            </div>
+        </form>
+    </dialog>
+</body>
+
+</html>
