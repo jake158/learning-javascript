@@ -73,12 +73,14 @@ function Game(players) {
     const columns = 3;
     const board = Gameboard(rows, columns);
 
+    const getActivePlayer = () => winner != null ? null : players[currentPlayerIndex];
+
     const nextTurn = () => {
         currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
     };
 
     const makeMove = (row, column) => {
-        if (winner != null) {
+        if (winner) {
             console.error('Cannot make move, game is complete.');
             return;
         }
@@ -88,107 +90,51 @@ function Game(players) {
 
         if (success) {
             console.log(`${player.playerName} crosses out cell ${row}, ${column}`);
-            checkVictory();
-            nextTurn();
+            if (checkVictory(row, column, player.playerToken)) {
+                winner = player.playerName;
+                console.log(`Game finished: ${winner} wins`);
+            } else {
+                nextTurn();
+            }
         }
     };
 
-    const checkVictory = () => {
+    const checkVictory = (row, column, playerToken) => {
         const currentBoard = board.getBoard();
         const winningStreak = 3;
-        const rows = currentBoard.length;
-        const columns = currentBoard[0].length;
 
-        const getWinner = (winningToken) => {
-            let winner = null;
-            players.forEach((player) => {
-                if (player.playerToken === winningToken) {
-                    winner = player.playerName;
-                }
-            });
-            return winner;
+        const checkDirection = (rowIncrement, colIncrement) => {
+            let counter = 1;
+            let i = row + rowIncrement;
+            let j = column + colIncrement;
+
+            while (i >= 0 && i < rows && j >= 0 && j < columns && currentBoard[i][j].getValue() === playerToken) {
+                counter++;
+                i += rowIncrement;
+                j += colIncrement;
+            }
+
+            i = row - rowIncrement;
+            j = column - colIncrement;
+
+            while (i >= 0 && i < rows && j >= 0 && j < columns && currentBoard[i][j].getValue() === playerToken) {
+                counter++;
+                i -= rowIncrement;
+                j -= colIncrement;
+            }
+
+            return counter >= winningStreak;
         };
 
-        // Horizontal check
-        for (let i = 0; i < rows; i++) {
-            let previousToken = null;
-            let counter = 1;
-            for (let j = 0; j < columns; j++) {
-                let tokenAtCell = currentBoard[i][j].getValue();
-                counter = tokenAtCell && previousToken === tokenAtCell ? counter + 1 : 1;
-                previousToken = tokenAtCell;
-                if (counter === winningStreak) {
-                    winner = getWinner(tokenAtCell);
-                    if (winner) return winner;
-                }
-            }
-        }
-
-        // Vertical check
-        for (let j = 0; j < columns; j++) {
-            let previousToken = null;
-            let counter = 1;
-            for (let i = 0; i < rows; i++) {
-                let tokenAtCell = currentBoard[i][j].getValue();
-                counter = tokenAtCell && previousToken === tokenAtCell ? counter + 1 : 1;
-                previousToken = tokenAtCell;
-                if (counter === winningStreak) {
-                    winner = getWinner(tokenAtCell);
-                    if (winner) return winner;
-                }
-            }
-        }
-
-        // Diagonal check (top-left to bottom-right)
-        for (let i = 0; i <= rows - winningStreak; i++) {
-            for (let j = 0; j <= columns - winningStreak; j++) {
-                let previousToken = currentBoard[i][j].getValue();
-                let counter = previousToken ? 1 : 0;
-                for (let k = 1; k < winningStreak; k++) {
-                    if (previousToken && currentBoard[i + k][j + k].getValue() === previousToken) {
-                        counter++;
-                    } else {
-                        break;
-                    }
-                }
-                if (counter === winningStreak) {
-                    winner = getWinner(previousToken);
-                    if (winner) return winner;
-                }
-            }
-        }
-
-        // Diagonal check (bottom-left to top-right)
-        for (let i = winningStreak - 1; i < rows; i++) {
-            for (let j = 0; j <= columns - winningStreak; j++) {
-                let previousToken = currentBoard[i][j].getValue();
-                let counter = previousToken ? 1 : 0;
-                for (let k = 1; k < winningStreak; k++) {
-                    if (previousToken && currentBoard[i - k][j + k].getValue() === previousToken) {
-                        counter++;
-                    } else {
-                        break;
-                    }
-                }
-                if (counter === winningStreak) {
-                    winner = getWinner(previousToken);
-                    if (winner) return winner;
-                }
-            }
-        }
-
-        return false;
+        return checkDirection(1, 0) ||  // Vertical
+            checkDirection(0, 1) ||     // Horizontal
+            checkDirection(1, 1) ||     // Diagonal top-left to bottom-right
+            checkDirection(1, -1);      // Diagonal bottom-left to top-right
     };
-
-
-    const getActivePlayer = () => players[currentPlayerIndex];
 
     const printNewRound = () => {
         board.logBoard();
-        if (winner != null) {
-            console.log(`Game finished: ${winner} wins`);
-        }
-        else {
+        if (!winner) {
             console.log(`${getActivePlayer().playerName}'s turn`);
         }
     };
@@ -205,14 +151,9 @@ const player1 = Player('Alice', 'X');
 const player2 = Player('Bob', 'O');
 const game = Game([player1, player2]);
 
-game.printNewRound();
 game.makeMove(0, 0);
-game.printNewRound();
 game.makeMove(1, 0);
-game.printNewRound();
 game.makeMove(1, 1);
-game.printNewRound();
 game.makeMove(1, 2);
-game.printNewRound();
 game.makeMove(2, 2);
 game.printNewRound();
