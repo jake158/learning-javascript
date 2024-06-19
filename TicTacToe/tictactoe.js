@@ -48,9 +48,7 @@ function Gameboard(rows, columns) {
 
     const logBoard = () => {
         const valueBoard = board.map((row) => row.map((cell) => cell.getValue()));
-        for (let i = 0; i < rows; i++) {
-            console.log(valueBoard[i]);
-        }
+        valueBoard.forEach(row => console.log(row));
     }
 
     return { getBoard, crossOut, logBoard }
@@ -58,19 +56,18 @@ function Gameboard(rows, columns) {
 
 
 function Player(playerName, playerToken) {
-    return { playerName, playerToken }
+    return { playerName, playerToken };
 }
 
 
-function Game(players) {
+function Game(players, rows = 3, columns = 3) {
     if (!Array.isArray(players) || players.length === 0) {
         console.error('Game requires an array of players with at least one player.');
+        return;
     }
 
     let currentPlayerIndex = 0;
     let winner = null;
-    const rows = 3;
-    const columns = 3;
     const board = Gameboard(rows, columns);
 
     const getActivePlayer = () => winner != null ? null : players[currentPlayerIndex];
@@ -97,9 +94,8 @@ function Game(players) {
                 console.log(`Game finished: ${winner} wins`);
             } else if (isTie()) {
                 winner = 'Tie';
-                console.log('Game finished with a tie')
-            }
-            else {
+                console.log('Game finished with a tie');
+            } else {
                 nextTurn();
             }
         }
@@ -132,11 +128,10 @@ function Game(players) {
             return counter >= winningStreak;
         };
 
-
         return checkDirection(1, 0) ||  // Vertical
             checkDirection(0, 1) ||  // Horizontal
             checkDirection(1, 1) ||  // Diagonal top-left to bottom-right
-            checkDirection(1, -1)    // Diagonal bottom-left to top-right
+            checkDirection(1, -1);   // Diagonal bottom-left to top-right
     };
 
     const isTie = () => {
@@ -160,27 +155,72 @@ function Game(players) {
 
     printNewRound();
 
+    const getWinner = () => winner;
 
     return {
         makeMove,
         getActivePlayer,
-        getBoard: board.getBoard
+        getBoard: board.getBoard,
+        getWinner
     };
 }
 
 
 function ScreenController() {
-    const player1 = Player('Alice', 'X');
-    const player2 = Player('Bob', 'O');
-    const game = Game([player1, player2]);
+    let players = [];
+    let game;
+
     const boardDiv = document.querySelector('.board');
+    const playerTurnDiv = document.querySelector('.turn');
+    const sidePanel = document.querySelector('.sidepanel');
 
-    const cssObj = window.getComputedStyle(boardDiv, null);
-    const boardWidth = parseInt(cssObj.getPropertyValue('width'));
-    const boardHeight = parseInt(cssObj.getPropertyValue('height'));
+    const addPlayerButton = sidePanel.querySelector('#add-player');
+    const playerNameInput = sidePanel.querySelector('#player-name');
+    const playerTokenInput = sidePanel.querySelector('#player-token');
+    const setBoardSizeButton = sidePanel.querySelector('#set-board-size');
+    const boardRowsInput = sidePanel.querySelector('#board-rows');
+    const boardColumnsInput = sidePanel.querySelector('#board-columns');
+    const playerList = sidePanel.querySelector('#player-list');
 
+    const addPlayer = () => {
+        const playerName = playerNameInput.value.trim();
+        const playerToken = playerTokenInput.value.trim();
+
+        if (playerName && playerToken && playerToken.length === 1) {
+            players.push(Player(playerName, playerToken));
+            playerNameInput.value = '';
+            playerTokenInput.value = '';
+            console.log(`Added player: ${playerName} with token: ${playerToken}`);
+            updatePlayerList();
+        } else {
+            console.error('Player name and token (1 character) are required.');
+        }
+    };
+
+    const updatePlayerList = () => {
+        playerList.innerHTML = '';
+        players.forEach(player => {
+            const playerItem = document.createElement('li');
+            playerItem.textContent = `${player.playerName} (${player.playerToken})`;
+            playerList.appendChild(playerItem);
+        });
+    };
+
+    const setBoardSize = () => {
+        const rows = parseInt(boardRowsInput.value, 10);
+        const columns = parseInt(boardColumnsInput.value, 10);
+
+        if (rows >= 3 && columns >= 3) {
+            game = Game(players, rows, columns);
+            updateScreen();
+        } else {
+            console.error('Rows and columns must be at least 3.');
+        }
+    };
 
     const updateScreen = () => {
+        if (!game) return;
+
         boardDiv.innerHTML = '';
         const board = game.getBoard().map((row) => row.map((cell) => cell.getValue()));
 
@@ -193,22 +233,38 @@ function ScreenController() {
                 cell.dataset.column = j;
 
                 cell.classList.add('cell');
-                cell.style.width = (boardWidth / row.length) + 'px';
-                cell.style.height = (boardHeight / board.length) + 'px';
+                cell.style.width = `${100 / row.length}%`;
+                cell.style.height = `${100 / board.length}%`;
 
                 cell.addEventListener('click', cellClickHandler);
                 boardDiv.appendChild(cell);
             }
         }
-    }
+
+        const activePlayer = game.getActivePlayer();
+        if (activePlayer) {
+            playerTurnDiv.textContent = `${activePlayer.playerName}'s turn...`;
+        } else if (game.getWinner() === 'Tie') {
+            playerTurnDiv.textContent = 'Game finished with a tie!';
+        } else {
+            playerTurnDiv.textContent = `Game finished: ${game.getWinner()} wins!`;
+        }
+    };
 
     const cellClickHandler = (e) => {
         const row = e.target.dataset.row;
         const column = e.target.dataset.column;
         game.makeMove(row, column);
         updateScreen();
-    }
+    };
 
+    addPlayerButton.addEventListener('click', addPlayer);
+    setBoardSizeButton.addEventListener('click', setBoardSize);
+
+    // Initial setup with default values
+    players = [Player('Alice', 'X'), Player('Bob', 'O')];
+    updatePlayerList();
+    game = Game(players);
     updateScreen();
 }
 

@@ -10,7 +10,30 @@
 </head>
 
 <body>
-    <div class="board"></div>
+    <div class="sidepanel">
+        <div class="player-setup">
+            <h2>Add New Player</h2>
+            <input type="text" id="player-name" placeholder="Player Name">
+            <input type="text" id="player-token" placeholder="Player Token (1 character)" maxlength="1">
+            <button id="add-player">Add Player</button>
+        </div>
+        <div class="player-list">
+            <h2>Players</h2>
+            <ul id="player-list"></ul>
+        </div>
+        <div class="board-setup">
+            <h2>Set Board Size</h2>
+            <div>
+                <input type="number" id="board-rows" placeholder="Rows" min="3" max="10" value="3">
+                <input type="number" id="board-columns" placeholder="Columns" min="3" max="10" value="3">
+            </div>
+            <button id="set-board-size">Set Board Size</button>
+        </div>
+    </div>
+    <div class="board-container">
+        <div class="turn"></div>
+        <div class="board"></div>
+    </div>
 </body>
 
 </html>
