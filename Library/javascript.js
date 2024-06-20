@@ -17,46 +17,45 @@ class Book {
         this.read = read;
     }
 
-    render(id) {
+    render(id, renderBookCallback, removeBookCallback) {
         const bookEntry = document.createElement('tr');
 
         for (const attr in this) {
             if (this.hasOwnProperty(attr)) {
                 const td = document.createElement('td');
-                attr === 'read' ? td.appendChild(this.createReadButton()) : td.textContent = this[attr];
+                attr === 'read' ? td.appendChild(this.#createReadButton(renderBookCallback)) : td.textContent = this[attr];
                 bookEntry.appendChild(td);
             }
         }
-        bookEntry.appendChild(this.createRemoveButton(id));
+        bookEntry.appendChild(this.#createRemoveButton(id, removeBookCallback));
         return bookEntry;
     }
 
-    createReadButton() {
+    #createReadButton(renderBookCallback) {
         const button = document.createElement('button');
         button.textContent = this.read ? "True" : "False";
         button.style.color = this.read ? "green" : "red";
         button.addEventListener('click', () => {
-            this.flipRead();
+            this.#flipRead(renderBookCallback);
         });
         return button;
     }
 
-    flipRead() {
+    #flipRead(renderBookCallback) {
         this.read = !this.read;
-        displayBooks();
+        renderBookCallback();
     }
 
-    createRemoveButton(id) {
+    #createRemoveButton(id, removeBookCallback) {
         const removeButton = document.createElement('button');
         removeButton.textContent = 'x';
         removeButton.classList.add('removebtn');
         removeButton.addEventListener('click', () => {
-            removeBook(id);
+            removeBookCallback(id);
         });
         const td = document.createElement('td');
         td.appendChild(removeButton);
         return td;
-
     }
 }
 
@@ -74,7 +73,7 @@ function removeBook(id) {
 function displayBooks() {
     booksList.innerHTML = '';
     myLibrary.forEach((book, id) => {
-        booksList.appendChild(book.render(id));
+        booksList.appendChild(book.render(id, displayBooks, removeBook));
     });
 }
 
