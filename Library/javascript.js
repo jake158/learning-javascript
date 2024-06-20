@@ -8,53 +8,58 @@ const cancelButton = document.querySelector('#cancelbutton');
 const submitButton = document.querySelector('#submitbutton');
 
 
-function Book(title, author, pages, read) {
-    this.title = title;
-    this.author = author;
-    this.pages = pages;
-    this.read = read;
+class Book {
+
+    constructor(title, author, pages, read) {
+        this.title = title;
+        this.author = author;
+        this.pages = pages;
+        this.read = read;
+    }
+
+    render(id) {
+        const bookEntry = document.createElement('tr');
+
+        for (const attr in this) {
+            if (this.hasOwnProperty(attr)) {
+                const td = document.createElement('td');
+                attr === 'read' ? td.appendChild(this.createReadButton()) : td.textContent = this[attr];
+                bookEntry.appendChild(td);
+            }
+        }
+        bookEntry.appendChild(this.createRemoveButton(id));
+        return bookEntry;
+    }
+
+    createReadButton() {
+        const button = document.createElement('button');
+        button.textContent = this.read ? "True" : "False";
+        button.style.color = this.read ? "green" : "red";
+        button.addEventListener('click', () => {
+            this.flipRead();
+        });
+        return button;
+    }
+
+    flipRead() {
+        this.read = !this.read;
+        displayBooks();
+    }
+
+    createRemoveButton(id) {
+        const removeButton = document.createElement('button');
+        removeButton.textContent = 'x';
+        removeButton.classList.add('removebtn');
+        removeButton.addEventListener('click', () => {
+            removeBook(id);
+        });
+        const td = document.createElement('td');
+        td.appendChild(removeButton);
+        return td;
+
+    }
 }
 
-Book.prototype.render = function (id) {
-    const bookEntry = document.createElement('tr');
-
-    for (const attr in this) {
-        if (this.hasOwnProperty(attr)) {
-            const td = document.createElement('td');
-            attr === 'read' ? td.appendChild(this.createReadButton()) : td.textContent = this[attr];
-            bookEntry.appendChild(td);
-        }
-    }
-    bookEntry.appendChild(this.createRemoveButton(id));
-    return bookEntry;
-};
-
-Book.prototype.createReadButton = function () {
-    const button = document.createElement('button');
-    button.textContent = this.read ? "True" : "False";
-    button.style.color = this.read ? "green" : "red";
-    button.addEventListener('click', () => {
-        this.flipRead();
-    });
-    return button;
-};
-
-Book.prototype.createRemoveButton = function (id) {
-    const removeButton = document.createElement('button');
-    removeButton.textContent = 'x';
-    removeButton.classList.add('removebtn');
-    removeButton.addEventListener('click', () => {
-        removeBook(id);
-    });
-    const td = document.createElement('td');
-    td.appendChild(removeButton);
-    return td;
-};
-
-Book.prototype.flipRead = function () {
-    this.read = !this.read;
-    displayBooks();
-};
 
 function addBook(book) {
     myLibrary.push(book);
@@ -64,14 +69,14 @@ function addBook(book) {
 function removeBook(id) {
     myLibrary.splice(id, 1);
     displayBooks();
-};
+}
 
 function displayBooks() {
     booksList.innerHTML = '';
-    myLibrary.forEach((book, index) => {
-        booksList.appendChild(book.render(index));
+    myLibrary.forEach((book, id) => {
+        booksList.appendChild(book.render(id));
     });
-};
+}
 
 const hobbit = new Book("The Hobbit", "Tolkien", 365, true);
 const hp = new Book("Harry Potter: Something something stone", "JKR", 256, false);
